@@ -6,11 +6,12 @@ use Getopt::Long;
 my ($buf, $dif, $inp, $mark, $n, $off, @pnloc, $pos, $raw);
 GetOptions(
            "inp=s" => \$inp,
+           "off=i" => \$off,
            "raw=s" => \$raw
           );
 if ($raw) {
   open FHraw, $raw or die "Can't open $raw for reading";
-  if ($raw =~ /rawml/) { $off = 14; } else { $off = 0; }
+  if ($raw =~ /assembled_text/) { $off = 0; } else { $off = 14 unless $off; }
 }
 my ($dev, $ino, $mode, $nlink, $uid, $gid, $rdev, $size, @misc) = stat($inp)
 or die "Can't stat input file: '$inp'.\n";
