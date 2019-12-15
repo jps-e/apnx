@@ -4,9 +4,9 @@ use warnings;
 use Getopt::Long;
 use JSON;
 
-my ($buf, $inp, $mark, $n, $nmaps, $out, @outloc, $page, $pmap, @pnloc, $pos);
-my (@entries, @types, @pns, @newlocs, @newmaps, @newtypes, $maplen, @cpns);
-my $div = 5; my $entry = 0; my $ipos = 0;
+my ($buf, $inp, $incr, $n, $nmaps, $out, @outloc, $med, $pmap, @pnloc, $pos);
+my (@entries, @types, @pns, @newents, @newmaps, @newtypes, $maplen, @newpns);
+my $div = 5; my $entry = 0; my $ipos = 0; my $opos=0; my @delts;
 GetOptions(
            "dev=i" => \$div,
            "inp=s" => \$inp,
@@ -38,7 +38,13 @@ $pagemap =~ s/\),/)\t/g; $pagemap =~ s/\(//g; $pagemap =~ s/\)//g;
 my @pmaps = split /\t/, $pagemap;
 for (my $i=0; $i<$page_count; $i++) {
   $pnloc[$i] = unpack('N', substr($buf, $pos, 4)); $pos += 4;
+  $delts[$i-1] = $pnloc[$i] - $pnloc[$i-1] if $i;
 }
+my @sorted = sort { $a <=> $b } @delts;
+my $mid = int @sorted/2;
+if (@sorted%2) { $med = $sorted[$mid]; }
+else { $med = ($sorted[$mid-1] + $sorted[$mid])/2; }
+printf "med: $med\t%d\t%d\n", $sorted[$mid-1], $sorted[$mid];
 while ($pnloc[$ipos] == 0) { $ipos++; }
 for (my $i=0; $i<=$#pmaps; $i++) {
   ($entries[$i], $types[$i], $pns[$i]) = split /,/, $pmaps[$i];
@@ -50,13 +56,25 @@ for (my $i=0; $i<=$#pmaps; $i++) {
   else { $maplen = $page_count - $entries[$i]; }
   if ($types[$i] eq "a") {
 print "type 'a' $pmaps[$i], maplen $maplen pages\n";
-    
+    my $loc = $pnloc[$ipos];
+    $entry = $entries[$i];
+    for (my $map=1; $map<$maplen; $map++, $entry++, $ipos++) {
+      if ($delts[$entry]<$med) { $incr = int(0.5 + $med/$div); }
+      else { $incr = int(0.5 + $delts[$entry]/$div); }
+print "incr: $incr, delt: $delts[$entry], entry $entry, i: $i, map: $map\n";
+      while ($loc<$pnloc[$entry]) {
+print "$ipos\t$pnloc[$ipos]\t$loc\n";
+        $outloc[$opos++] = $loc;
+        $loc += $incr;
+      }
+    }
   } elsif ($types[$i] eq "r") {
 print "type 'r' $pmaps[$i], maplen $maplen pages\n";
+    
   } elsif ($types[$i] eq "c") {
 print "type 'c' $pmaps[$i], maplen $maplen pages\n";
-
+    
   } else { warn "Bad page type '$types[$i]'"; }
 }
-printf "($entries[$#pmaps],$types[$#pmaps],$pns[$#pmaps]), %d, %d, %d, %d\n",
-       $#pmaps, $ipos, $page_count, $#pnloc;
+printf "($entries[$#pmaps],$types[$#pmaps],$pns[$#pmaps]), %d, %d, %s%d, %d\n",
+       $#pmaps, $ipos, 'page count: ', $page_count, $#pnloc;
