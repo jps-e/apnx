@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Getopt::Long;
 
-my ($buf, $dif, $inp, $mark, $n, $off, @pnloc, $pos, $raw);
+my ($buf, $dif, $inp, $mark, $n, $off, @pnloc, $pos, $raw, @difs, $med);
 GetOptions(
            "inp=s" => \$inp,
            "off=i" => \$off,
@@ -36,9 +36,15 @@ print "# hdr2:\n# ${hdr2}\n";
 for (my $i=0; $i<$page_count; $i++) {
   $pnloc[$i] = unpack('N', substr($buf, $pos, 4)); $pos += 4;
   if ($i) { $dif = $pnloc[$i] - $pnloc[$i-1]; } else { $dif = 0; }
+  $difs[$i-1] = $dif if $i;
   if ($raw) {
     seek FHraw, $pnloc[$i] + $off, 0;
-    $n = read FHraw, $mark, 16;
+    $n = read FHraw, $mark, 48;
     print "$i\t$pnloc[$i]\t$dif\t$mark\n";
   } else { print "$i\t$pnloc[$i]\t$dif\n"; }
 }
+my @sorted = sort { $a <=> $b } @difs;
+my $mid = int @sorted/2;
+if (@sorted%2) { $med = $sorted[$mid]; }
+else { $med = ($sorted[$mid-1] + $sorted[$mid])/2; }
+print "# median page length: $med bytes\n";
