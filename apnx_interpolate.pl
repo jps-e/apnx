@@ -38,7 +38,7 @@ $pagemap =~ s/\),/)\t/g; $pagemap =~ s/\(//g; $pagemap =~ s/\)//g;
 my @pmaps = split /\t/, $pagemap;
 for (my $i=0; $i<$page_count; $i++) {
   $pnloc[$i] = unpack('N', substr($buf, $pos, 4)); $pos += 4;
-  $delts[$i-1] = $pnloc[$i] - $pnloc[$i-1] if $i;
+  $delts[$i] = $pnloc[$i] - $pnloc[$i-1] if $i;
 }
 my @sorted = sort { $a <=> $b } @delts;
 my $mid = int @sorted/2;
