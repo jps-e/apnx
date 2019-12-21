@@ -58,14 +58,16 @@ for (my $i=0; $i<=$#pmaps; $i++) {
 print "type 'a' $pmaps[$i], maplen $maplen pages\n";
     my $loc = $pnloc[$ipos];
     $entry = $entries[$i];
-    for (my $map=1; $map<$maplen; $map++, $entry++, $ipos++) {
+    for (my $map=0; $map<$maplen; $map++, $entry++, $ipos++) {
+      my $fp = 0;
       if ($delts[$entry]<$med) { $incr = int(0.5 + $med/$div); }
       else { $incr = int(0.5 + $delts[$entry]/$div); }
 print "incr: $incr, delt: $delts[$entry], entry $entry, i: $i, map: $map\n";
       while ($loc<$pnloc[$entry]) {
-print "$ipos\t$pnloc[$ipos]\t$loc\n";
+        my $pn = $entry + $fp/$div;
+printf "$ipos\t$pnloc[$ipos]\t$loc\t%.2f\n", $pn;
         $outloc[$opos++] = $loc;
-        $loc += $incr;
+        $loc += $incr; $fp++;
       }
     }
   } elsif ($types[$i] eq "r") {
