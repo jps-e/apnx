@@ -36,6 +36,7 @@ my %h2 = %{decode_json($hdr2)};
 my $pagemap = $h2{pageMap};
 $pagemap =~ s/\),/)\t/g; $pagemap =~ s/\(//g; $pagemap =~ s/\)//g;
 my @pmaps = split /\t/, $pagemap;
+$delts[0] = 0;
 for (my $i=0; $i<$page_count; $i++) {
   $pnloc[$i] = unpack('N', substr($buf, $pos, 4)); $pos += 4;
   $delts[$i] = $pnloc[$i] - $pnloc[$i-1] if $i;
