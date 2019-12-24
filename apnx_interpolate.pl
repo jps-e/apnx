@@ -6,7 +6,7 @@ use JSON;
 
 my ($buf, $inp, $incr, $n, $nmaps, $out, @outloc, $med, $pmap, @pnloc, $pos);
 my (@entries, @types, @pns, @newents, @newmaps, @newtypes, $maplen, @newpns);
-my $div = 5; my $entry = 0; my $ipos = 0; my $opos=0; my @delts;
+my $div = 5; my $entry = 0; my $ipos = 0; my $opos=0; my @delts; my $newent=0;
 GetOptions(
            "dev=i" => \$div,
            "inp=s" => \$inp,
@@ -59,17 +59,23 @@ for (my $i=0; $i<=$#pmaps; $i++) {
 print "type 'a' $pmaps[$i], maplen $maplen pages\n";
     my $loc = $pnloc[$ipos];
     $entry = $entries[$i];
-    for (my $map=0; $map<$maplen; $map++, $entry++, $ipos++) {
+    for (my $map=0; $map<$maplen; $map++, $entry++, $ipos++, $newent++) {
+      $newents[$newent] = $entry;
+      $newtypes[$newent] = 'c';
+      $newpns[$newent] = '';
       my $fp = 0;
       if ($delts[$entry]<$med) { $incr = int(0.5 + $med/$div); }
       else { $incr = int(0.5 + $delts[$entry]/$div); }
 print "incr: $incr, delt: $delts[$entry], entry $entry, i: $i, map: $map\n";
       while ($loc<$pnloc[$entry]) {
         my $pn = $entry + $fp/$div;
+        $newpns[$newent] .= "$pn|";
 printf "$ipos\t$pnloc[$ipos]\t$loc\t%.2f\n", $pn;
         $outloc[$opos++] = $loc;
         $loc += $incr; $fp++;
       }
+      chop $newpns[$newent];
+printf "($newents[$newent],$newtypes[$newent],$newpns[$newent])\n";
     }
   } elsif ($types[$i] eq "r") {
 print "type 'r' $pmaps[$i], maplen $maplen pages\n";
