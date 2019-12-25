@@ -18,8 +18,8 @@ my ($dev, $ino, $mode, $nlink, $uid, $gid, $rdev, $size, @misc) = stat($inp)
 or die "Can't stat input file: '$inp'.\n";
 if ($inp) { open FHinp, $inp or die "Can't open $inp for reading"; }
 else { die "required input apnx file name missing"; }
-#if ($out) { open FHout, '>', $out or die "Can't open $out for writing"; }
-#else { die "required ouput apnx file name missing"; }
+if ($out) { open FHout, '>', $out or die "Can't open $out for writing"; }
+else { die "required ouput apnx file name missing"; }
 $n = read FHinp, $buf, $size;
 close FHinp;
 die "Only read $n of $size" if $n ne $size;
@@ -50,6 +50,7 @@ while ($pnloc[$ipos] == 0) { $ipos++; }
 for (my $i=0; $i<=$#pmaps; $i++) {
   ($entries[$i], $types[$i], $pns[$i]) = split /,/, $pmaps[$i];
 }
+$pagemap = '';
 for (my $i=0; $i<=$#pmaps; $i++) {
   if ($i<$#pmaps) {
     $maplen = $entries[$i+1] - $entries[$i];
@@ -59,6 +60,7 @@ for (my $i=0; $i<=$#pmaps; $i++) {
 print "type 'a' $pmaps[$i], maplen $maplen pages\n";
     my $loc = $pnloc[$ipos];
     $entry = $entries[$i];
+    my $pnum = $pns[$i];
     for (my $map=0; $map<$maplen; $map++, $entry++, $ipos++, $newent++) {
       $newents[$newent] = $entry;
       $newtypes[$newent] = 'c';
@@ -68,13 +70,15 @@ print "type 'a' $pmaps[$i], maplen $maplen pages\n";
       else { $incr = int(0.5 + $delts[$entry]/$div); }
 print "incr: $incr, delt: $delts[$entry], entry $entry, i: $i, map: $map\n";
       while ($loc<$pnloc[$entry]) {
-        my $pn = $entry + $fp/$div;
+        my $pn = $pnum + $fp/$div;
         $newpns[$newent] .= "$pn|";
 printf "$ipos\t$pnloc[$ipos]\t$loc\t%.2f\n", $pn;
         $outloc[$opos++] = $loc;
         $loc += $incr; $fp++;
       }
+      $pnum++;
       chop $newpns[$newent];
+      $pagemap = join(',', "($newents[$newent],$newtypes[$newent],$newpns[$newent])");
 printf "($newents[$newent],$newtypes[$newent],$newpns[$newent])\n";
     }
   } elsif ($types[$i] eq "r") {
@@ -87,3 +91,5 @@ print "type 'c' $pmaps[$i], maplen $maplen pages\n";
 }
 printf "($entries[$#pmaps],$types[$#pmaps],$pns[$#pmaps]), %d, %d, %s%d, %d\n",
        $#pmaps, $ipos, 'page count: ', $page_count, $#pnloc;
+print FHout substr($buf, 0, 14+$len_h1);
+close FHout;
