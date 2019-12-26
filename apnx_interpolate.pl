@@ -80,13 +80,24 @@ printf "$ipos\t$pnloc[$ipos]\t$loc\t%.2f\n", $pn;
       chop $newpns[$newent];
       $pagemap = join(',', "($newents[$newent],$newtypes[$newent],$newpns[$newent])");
 printf "($newents[$newent],$newtypes[$newent],$newpns[$newent])\n";
+print "pagemap: '$pagemap'\n";
     }
   } elsif ($types[$i] eq "r") {
 print "type 'r' $pmaps[$i], maplen $maplen pages\n";
-    
+    my $loc = $pnloc[$ipos];
+    $entry = $entries[$i];
+    my $pnum = $pns[$i];
+       
   } elsif ($types[$i] eq "c") {
 print "type 'c' $pmaps[$i], maplen $maplen pages\n";
-    
+    my $loc = $pnloc[$ipos];
+    $entry = $entries[$i];
+    my $pnum = $pns[$i];
+    for (my $map=0; $map<$maplen; $map++, $entry++, $ipos++, $newent++) {
+      $newents[$newent] = $entry;
+      $newtypes[$newent] = 'c';
+      $newpns[$newent] = '';
+    }
   } else { warn "Bad page type '$types[$i]'"; }
 }
 printf "($entries[$#pmaps],$types[$#pmaps],$pns[$#pmaps]), %d, %d, %s%d, %d\n",
