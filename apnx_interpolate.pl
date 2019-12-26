@@ -76,6 +76,7 @@ printf "$ipos\t$pnloc[$ipos]\t$loc\t%.2f\n", $pn;
         $outloc[$opos++] = $loc;
         $loc += $incr; $fp++;
       }
+      $loc = $pnloc[$entry];
       $pnum++;
       chop $newpns[$newent];
       $pagemap = join(',', "($newents[$newent],$newtypes[$newent],$newpns[$newent])");
