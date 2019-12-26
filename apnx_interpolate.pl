@@ -84,10 +84,14 @@ print "pagemap: '$pagemap'\n";
     }
   } elsif ($types[$i] eq "r") {
 print "type 'r' $pmaps[$i], maplen $maplen pages\n";
-    my $loc = $pnloc[$ipos];
-    $entry = $entries[$i];
-    my $pnum = $pns[$i];
-       
+    $newents[$newent] = $entries[$i];
+    $newtypes[$newent] = 'r';
+    $newpns[$newent] = $pns[$i];
+printf "($newents[$newent],$newtypes[$newent],$newpns[$newent])\n";
+    for (my $map=0; $map<$maplen; $map++, $ipos++) {
+      $outloc[$opos++] = $pnloc[$ipos];
+    }
+    $newent++;
   } elsif ($types[$i] eq "c") {
 print "type 'c' $pmaps[$i], maplen $maplen pages\n";
     my $loc = $pnloc[$ipos];
