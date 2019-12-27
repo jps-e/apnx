@@ -48,3 +48,5 @@ my $mid = int @sorted/2;
 if (@sorted%2) { $med = $sorted[$mid]; }
 else { $med = ($sorted[$mid-1] + $sorted[$mid])/2; }
 print "# median page length: $med bytes\n";
+print "# Last file pos +4: $pos bytes, file size: $size bytes\n";
+warn "Not at end of apnx file $pos != $size" if $pos != $size;
