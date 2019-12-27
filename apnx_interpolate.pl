@@ -72,9 +72,10 @@ print "incr: $incr, delt: $delts[$entry], entry $entry, i: $i, map: $map\n";
       while ($loc<$pnloc[$entry]) {
         my $pn = $pnum + $fp/$div;
         $newpns[$newent] .= "$pn|";
-printf "$ipos\t$pnloc[$ipos]\t$loc\t%.2f\n", $pn;
+printf "$ipos\t$pnloc[$ipos]\t$loc\t%.2f\t$opos\n", $pn;
         $outloc[$opos++] = $loc;
         $loc += $incr; $fp++;
+        last unless $fp < $div;
       }
       $loc = $pnloc[$entry];
       $pnum++;
