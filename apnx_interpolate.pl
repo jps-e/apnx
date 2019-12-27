@@ -41,6 +41,7 @@ for (my $i=0; $i<$page_count; $i++) {
   $pnloc[$i] = unpack('N', substr($buf, $pos, 4)); $pos += 4;
   $delts[$i] = $pnloc[$i] - $pnloc[$i-1] if $i;
 }
+warn "Not at end of apnx file $pos != $size" if $pos != $size;
 my @sorted = sort { $a <=> $b } @delts;
 my $mid = int @sorted/2;
 if (@sorted%2) { $med = $sorted[$mid]; }
