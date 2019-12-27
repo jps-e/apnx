@@ -97,14 +97,14 @@ printf "($newents[$newent],$newtypes[$newent],$newpns[$newent])\n";
     $newent++;
   } elsif ($types[$i] eq "c") {
 print "type 'c' $pmaps[$i], maplen $maplen pages\n";
-    my $loc = $pnloc[$ipos];
-    $entry = $entries[$i];
-    my $pnum = $pns[$i];
-    for (my $map=0; $map<$maplen; $map++, $entry++, $ipos++, $newent++) {
-      $newents[$newent] = $entry;
-      $newtypes[$newent] = 'c';
-      $newpns[$newent] = '';
+    $newents[$newent] = $entries[$i];
+    $newtypes[$newent] = 'c';
+    $newpns[$newent] = $pns[$i];
+printf "($newents[$newent],$newtypes[$newent],$newpns[$newent])\n";
+    for (my $map=0; $map<$maplen; $map++, $ipos++) {
+      $outloc[$opos++] = $pnloc[$ipos];
     }
+    $newent++;
   } else { warn "Bad page type '$types[$i]'"; }
 }
 printf "($entries[$#pmaps],$types[$#pmaps],$pns[$#pmaps]), %d, %d, %s%d, %d\n",
