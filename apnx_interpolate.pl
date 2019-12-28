@@ -51,7 +51,6 @@ while ($pnloc[$ipos] == 0) { $ipos++; }
 for (my $i=0; $i<=$#pmaps; $i++) {
   ($entries[$i], $types[$i], $pns[$i]) = split /,/, $pmaps[$i];
 }
-$pagemap = '';
 for (my $i=0; $i<=$#pmaps; $i++) {
   if ($i<$#pmaps) {
     $maplen = $entries[$i+1] - $entries[$i];
@@ -81,15 +80,19 @@ printf "$ipos\t$pnloc[$ipos]\t$loc\t%.2f\t$opos\n", $pn;
       $loc = $pnloc[$entry];
       $pnum++;
       chop $newpns[$newent];
-      $pagemap = join(',', "($newents[$newent],$newtypes[$newent],$newpns[$newent])");
+      $pagemap = "($newents[$newent],$newtypes[$newent],$newpns[$newent])";
+      if ($pmap) { $pmap = join(",", $pmap, $pagemap); }
+      else { $pmap = $pagemap; }
 printf "($newents[$newent],$newtypes[$newent],$newpns[$newent])\n";
-print "pagemap: '$pagemap'\n";
     }
   } elsif ($types[$i] eq "r") {
 print "type 'r' $pmaps[$i], maplen $maplen pages\n";
     $newents[$newent] = $entries[$i];
     $newtypes[$newent] = 'r';
     $newpns[$newent] = $pns[$i];
+    $pagemap = "($newents[$newent],$newtypes[$newent],$newpns[$newent])";
+    if ($pmap) { $pmap = join(",", $pmap, $pagemap); }
+    else { $pmap = $pagemap; }
 printf "($newents[$newent],$newtypes[$newent],$newpns[$newent])\n";
     for (my $map=0; $map<$maplen; $map++, $ipos++) {
       $outloc[$opos++] = $pnloc[$ipos];
@@ -100,6 +103,9 @@ print "type 'c' $pmaps[$i], maplen $maplen pages\n";
     $newents[$newent] = $entries[$i];
     $newtypes[$newent] = 'c';
     $newpns[$newent] = $pns[$i];
+    $pagemap = "($newents[$newent],$newtypes[$newent],$newpns[$newent])";
+    if ($pmap) { $pmap = join(",", $pmap, $pagemap); }
+    else { $pmap = $pagemap; }
 printf "($newents[$newent],$newtypes[$newent],$newpns[$newent])\n";
     for (my $map=0; $map<$maplen; $map++, $ipos++) {
       $outloc[$opos++] = $pnloc[$ipos];
@@ -109,5 +115,13 @@ printf "($newents[$newent],$newtypes[$newent],$newpns[$newent])\n";
 }
 printf "($entries[$#pmaps],$types[$#pmaps],$pns[$#pmaps]), %d, %d, %s%d, %d\n",
        $#pmaps, $ipos, 'page count: ', $page_count, $#pnloc;
-print FHout substr($buf, 0, 14+$len_h1);
+print "#pns: $#pns, #newpns: $#newpns, opos: $opos, #outloc: $#outloc:\n";
+print FHout substr($buf, 0, 14+$len_h1+2);
+my %h2out; $h2out{asin} = $h2{asin}; $h2out{pageMap} = $pmap;
+$hdr2 = encode_json(\%h2out);
+$len_h2 = length $hdr2;
+print "hdr2 len: $len_h2\nhdr2: $hdr2\npmap: '$pmap'\n";
+for ($pos=0; $pos<$opos; $pos++) {
+  
+}
 close FHout;
