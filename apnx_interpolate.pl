@@ -116,12 +116,12 @@ printf "($newents[$newent],$newtypes[$newent],$newpns[$newent])\n";
 printf "($entries[$#pmaps],$types[$#pmaps],$pns[$#pmaps]), %d, %d, %s%d, %d\n",
        $#pmaps, $ipos, 'page count: ', $page_count, $#pnloc;
 print "#pns: $#pns, #newpns: $#newpns, opos: $opos, #outloc: $#outloc:\n";
-print FHout substr($buf, 0, 14+$len_h1+2);
+print FHout substr($buf, 0, 14+$len_h1);
 my %h2out; $h2out{asin} = $h2{asin}; $h2out{pageMap} = $pmap;
 $hdr2 = encode_json(\%h2out);
 $len_h2 = length $hdr2;
+print FHout pack('n3', ($len_h2, $opos, $un32));
+print FHout $hdr2;
 print "hdr2 len: $len_h2\nhdr2: $hdr2\npmap: '$pmap'\n";
-for ($pos=0; $pos<$opos; $pos++) {
-  
-}
+print FHout pack("N$opos", @outloc);
 close FHout;
