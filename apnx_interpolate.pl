@@ -62,7 +62,7 @@ print "type 'a' $pmaps[$i], maplen $maplen pages\n";
     $entry = $entries[$i];
     my $pnum = $pns[$i];
     for (my $map=0; $map<$maplen; $map++, $entry++, $ipos++, $newent++) {
-      $newents[$newent] = $entry;
+      $newents[$newent] = $opos + 1;
       $newtypes[$newent] = 'c';
       $newpns[$newent] = '';
       my $fp = 0;
@@ -87,7 +87,7 @@ printf "($newents[$newent],$newtypes[$newent],$newpns[$newent])\n";
     }
   } elsif ($types[$i] eq "r") {
 print "type 'r' $pmaps[$i], maplen $maplen pages\n";
-    $newents[$newent] = $entries[$i];
+    $newents[$newent] = $opos + 1;
     $newtypes[$newent] = 'r';
     $newpns[$newent] = $pns[$i];
     $pagemap = "($newents[$newent],$newtypes[$newent],$newpns[$newent])";
@@ -100,7 +100,7 @@ printf "($newents[$newent],$newtypes[$newent],$newpns[$newent])\n";
     $newent++;
   } elsif ($types[$i] eq "c") {
 print "type 'c' $pmaps[$i], maplen $maplen pages\n";
-    $newents[$newent] = $entries[$i];
+    $newents[$newent] = $opos + 1;
     $newtypes[$newent] = 'c';
     $newpns[$newent] = $pns[$i];
     $pagemap = "($newents[$newent],$newtypes[$newent],$newpns[$newent])";
